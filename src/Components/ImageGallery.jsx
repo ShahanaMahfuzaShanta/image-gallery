@@ -5,6 +5,7 @@ import { useQuery } from "react-query";
 import DragImage from "./DragImage";
 
 const ImageGallery = () => {
+    const [selectedImages, setSelectedImages] = useState([]);
   const { refetch, data: images = [] } = useQuery({
     queryKey: ["images"],
     queryFn: async () => {
@@ -35,21 +36,38 @@ const ImageGallery = () => {
     updatedImageList.splice(toIndex, 0, movedImage);
     setImageList(updatedImageList);
   };
+
+  const toggleImageSelection = (imageId) => {
+    // Check if the image is already selected, if so, deselect it, otherwise select it
+    if (selectedImages.includes(imageId)) {
+      setSelectedImages(selectedImages.filter((id) => id !== imageId));
+    } else {
+      setSelectedImages([...selectedImages, imageId]);
+    }
+  };
   return (
     <>
-      <div className="grid grid-cols-5 gap-5 p-10 w-[1000px] mx-auto bg-white shadow-lg rounded-lg my-10">
+    <div className=" p-10 w-[1000px] mx-auto bg-white shadow-lg rounded-lg my-10">
+    <div className="flex justify-between">
+        <p>{selectedImages.length} Files Selected</p>
+        <button>Delete Files</button>
+    </div>
+      <div className="grid grid-cols-5 gap-5 my-8">
         {imageList?.map((image, index) => (
           <DragImage
-            key={image._id}
-            image={image}
-            index={index}
-            moveImage={moveImage}
-          />
+          key={image._id}
+          image={image}
+          index={index}
+          moveImage={moveImage}
+          isSelected={selectedImages.includes(image._id)}
+          toggleImageSelection={() => toggleImageSelection(image._id)}
+        />
         ))}
         <form onSubmit={handleSubmit(onSubmit)}>
           <input type="file" placeholder="file" {...register("file")} />
           <input type="submit" value="Add Images" />
         </form>
+      </div>
       </div>
     </>
   );
