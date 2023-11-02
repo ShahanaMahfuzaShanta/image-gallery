@@ -23,8 +23,7 @@ const DragImage = ({ image, index, moveImage, isSelected, toggleImageSelection }
   });
 
   const toggleChecked = () => {
-    setIsChecked(!isChecked
-        o)
+    setIsChecked(!isChecked)
     toggleImageSelection(); // Toggle the selection state when the checkbox is clicked
   };
 
