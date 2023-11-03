@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { ItemTypes } from "./ItemTypes";
-import { GrCheckbox, GrCheckboxSelected } from "react-icons/gr";
+import { ImCheckboxUnchecked } from "react-icons/im";
+import { AiFillCheckSquare } from "react-icons/ai";
 
 const DragImage = ({ image, index, moveImage, isSelected, toggleImageSelection }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -24,7 +25,8 @@ const DragImage = ({ image, index, moveImage, isSelected, toggleImageSelection }
 
   const toggleChecked = () => {
     setIsChecked(!isChecked)
-    toggleImageSelection(); // Toggle the selection state when the checkbox is clicked
+    // Toggle the selection state when the checkbox is clicked
+    toggleImageSelection(); 
   };
 
   return (
@@ -38,19 +40,28 @@ const DragImage = ({ image, index, moveImage, isSelected, toggleImageSelection }
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className=" relative">
-          {isHovered && (
+        {isHovered && (
+            <div className="absolute top-0 left-0 w-full h-full bg-gray-400 opacity-60 rounded-lg cursor-pointer"></div>
+          )}
+          {isChecked && (
+            <>
+            <div className="absolute top-0 left-0 w-full h-full bg-gray-200 opacity-60 rounded-lg cursor-pointer"></div>
             <div className="absolute top-3 left-3">
               <button onClick={toggleChecked}>
-                {isChecked ? (
-                  <GrCheckboxSelected></GrCheckboxSelected>
-                ) : (
-                  <GrCheckbox></GrCheckbox>
-                )}
+                <AiFillCheckSquare className="text-blue-600 text-xl" />
+              </button>
+            </div>
+            </>
+          )}
+          {isHovered && !isChecked && (
+            <div className="absolute top-3 left-3">
+              <button className="bg-white text-white rounded-md" onClick={toggleChecked}>
+                <ImCheckboxUnchecked />
               </button>
             </div>
           )}
           <img
-            className="border-2 rounded-lg cursor-pointer "
+            className="border-2 rounded-lg shadow-md shadow-blue-100"
             src={image.image}
             alt=""
           />
