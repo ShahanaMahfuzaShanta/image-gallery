@@ -4,12 +4,15 @@ import { useForm } from "react-hook-form";
 import { useQuery } from "react-query";
 import DragImage from "./DragImage";
 import { BsImage } from "react-icons/bs";
+import { toast } from "react-toastify";
 
 const ImageGallery = () => {
   const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -47,10 +50,54 @@ const ImageGallery = () => {
     }
   };
 
+  const img_hosting_token = `${import.meta.env.VITE_IMAGEBB}`;
+
+  const img_hosting_url = `https://api.imgbb.com/1/upload?key=${img_hosting_token}`;
+
   const onSubmit = (data) => {
-    //console.log(data);
-  //console.log(errors);
-}
+    console.log(data);
+    const formData = new FormData();
+    formData.append("image", data.image[0]);
+    fetch(img_hosting_url, {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((imgResponse) => {
+        console.log(imgResponse);
+        if (imgResponse.success) {
+          const imgURL = imgResponse?.data?.display_url;
+          const { image } = data;
+          console.log(imgURL);
+
+          const updatedGallery = { image: imgURL };
+          console.log(updatedGallery);
+          axios
+            .post(`http://localhost:5000/upload-image`, updatedGallery, {
+              withCredentials: true,
+            })
+            .then((data) => {
+              console.log("updated", data.data);
+              if (data?.data?.insertedId) {
+                reset();
+                setSelectedImage(null);
+                refetch(),
+                console.log("uploaded")
+                toast.success('Image uploaded successfully')
+              }
+            })
+            .catch((e) => {
+              console.error(e);
+            });
+        }
+      });
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      setSelectedImage(URL.createObjectURL(e.target.files[0])); // Set selectedImage state with the URL
+    }
+  };
 
   const deleteSelectedImages = () => {
     // Remove the selected images from the imageList
@@ -102,19 +149,30 @@ const ImageGallery = () => {
                 <div
                   className={`border-2 border-dotted rounded-lg h-28 md:h-[150px] lg:h-[165px] border-gray-300 flex items-center justify-center relative mx-auto`}
                 >
+                  {!selectedImage && (
                   <div className="icon absolute top-8 right-15">
                     <BsImage />
                   </div>
+                  )}
+                  {selectedImage && (
+                  <img
+                    src={selectedImage}
+                    alt="Uploaded"
+                    className="h-28 md:h-[150px] lg:h-[165px] rounded-md object-contain"
+                  />
+                )}
+
                   <input
                     type="file"
                     className="opacity-0 w-full h-full absolute top-0 left-0 cursor-pointer"
                     {...register("image", { required: true })}
+                    onChange={handleImageChange}
                   />
                 </div>
                 <input
                   type="submit"
                   value="Add Images"
-                  className=" absolute top-12 left-4 md:left-8 lg:left-10"
+                  className=" absolute top-12 left-4 md:left-8 lg:left-10 border cursor-pointer"
                 />
               </div>
             </form>
