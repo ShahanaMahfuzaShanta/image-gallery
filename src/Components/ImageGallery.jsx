@@ -20,7 +20,9 @@ const ImageGallery = () => {
   const { refetch, data: images = [] } = useQuery({
     queryKey: ["images"],
     queryFn: async () => {
-      const res = await axios.get(`https://image-server-virid.vercel.app/images`);
+      const res = await axios.get(`https://image-server-virid.vercel.app/images`, {
+        withCredentials: true,
+      });
       console.log(res?.data);
       return res?.data;
     },
