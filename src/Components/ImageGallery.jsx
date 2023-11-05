@@ -20,7 +20,7 @@ const ImageGallery = () => {
   const { refetch, data: images = [] } = useQuery({
     queryKey: ["images"],
     queryFn: async () => {
-      const res = await axios.get(`https://image-server-virid.vercel.app/images`, {
+      const res = await axios.get(`https://image-server-8bkxyjn5s-shahana-mahfuza-shantas-projects.vercel.app/images`, {
         withCredentials: true,
       });
       console.log(res?.data);
@@ -75,7 +75,7 @@ const ImageGallery = () => {
           const updatedGallery = { image: imgURL };
           console.log(updatedGallery);
           axios
-            .post(`https://image-server-virid.vercel.app/upload-image`, updatedGallery, {
+            .post(`https://image-server-8bkxyjn5s-shahana-mahfuza-shantas-projects.vercel.app/upload-image`, updatedGallery, {
               withCredentials: true,
             })
             .then((data) => {
